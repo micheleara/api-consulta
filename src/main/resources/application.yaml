@@ -1,3 +1,11 @@
+
+server:
+  port: 8085
+
 spring:
   application:
     name: api-consulta
+
+clients:
+  gestao-conta:
+    url: http://localhost:8081

@@ -2,6 +2,7 @@ package br.com.banco.api_consulta.adapter.input.controller;
 
 import br.com.banco.api_consulta.adapter.input.controller.dto.response.ErroResponse;
 import br.com.banco.api_consulta.core.exception.ContaNaoEncontradaException;
+import br.com.banco.api_consulta.core.exception.ServicoIndisponivelException;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -27,6 +28,23 @@ public class GlobalExceptionHandler {
                 .body(new ErroResponse(
                         HttpStatus.NOT_FOUND.value(),
                         "Conta não encontrada",
+                        ex.getMessage(),
+                        LocalDateTime.now()
+                ));
+    }
+
+    @ExceptionHandler(ServicoIndisponivelException.class)
+    @ApiResponse(
+            responseCode = "503",
+            description = "Serviço externo indisponível",
+            content = @Content(schema = @Schema(implementation = ErroResponse.class))
+    )
+    public ResponseEntity<ErroResponse> handleServicoIndisponivel(ServicoIndisponivelException ex) {
+        return ResponseEntity
+                .status(HttpStatus.SERVICE_UNAVAILABLE)
+                .body(new ErroResponse(
+                        HttpStatus.SERVICE_UNAVAILABLE.value(),
+                        "Serviço indisponível",
                         ex.getMessage(),
                         LocalDateTime.now()
                 ));

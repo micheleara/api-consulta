@@ -47,6 +47,11 @@ public class ContaController {
                     content = @Content(schema = @Schema(implementation = ErroResponse.class))
             ),
             @ApiResponse(
+                    responseCode = "503",
+                    description = "Serviço externo indisponível (circuit breaker aberto)",
+                    content = @Content(schema = @Schema(implementation = ErroResponse.class))
+            ),
+            @ApiResponse(
                     responseCode = "500",
                     description = "Erro interno do servidor",
                     content = @Content(schema = @Schema(implementation = ErroResponse.class))

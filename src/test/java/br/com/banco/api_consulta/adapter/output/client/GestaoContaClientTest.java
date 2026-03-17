@@ -4,6 +4,7 @@ import br.com.banco.api_consulta.adapter.output.client.dto.response.GestaoContaC
 import br.com.banco.api_consulta.adapter.output.mapper.ContaOutputMapper;
 import br.com.banco.api_consulta.core.domain.model.Conta;
 import br.com.banco.api_consulta.core.exception.ContaNaoEncontradaException;
+import br.com.banco.api_consulta.core.exception.ServicoIndisponivelException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -48,7 +49,7 @@ class GestaoContaClientTest {
     }
 
     @Test
-    void devePropagaExcecaoQuandoContaNaoEncontrada() {
+    void devePropagaContaNaoEncontradaExceptionSemFallback() {
         var numeroConta = "9999-9";
         when(feignClient.consultarConta(numeroConta))
                 .thenThrow(new ContaNaoEncontradaException(numeroConta));
@@ -57,4 +58,5 @@ class GestaoContaClientTest {
                 .isInstanceOf(ContaNaoEncontradaException.class)
                 .hasMessageContaining("9999-9");
     }
+
 }

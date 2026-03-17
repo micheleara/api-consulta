@@ -4,6 +4,7 @@ import br.com.banco.api_consulta.adapter.input.controller.dto.response.ContaSald
 import br.com.banco.api_consulta.adapter.input.mapper.ContaInputMapper;
 import br.com.banco.api_consulta.core.domain.model.Conta;
 import br.com.banco.api_consulta.core.exception.ContaNaoEncontradaException;
+import br.com.banco.api_consulta.core.exception.ServicoIndisponivelException;
 import br.com.banco.api_consulta.port.input.ConsultarSaldoContaInputPort;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,6 +60,19 @@ class ContaControllerTest {
                 .andExpect(jsonPath("$.status").value(404))
                 .andExpect(jsonPath("$.erro").value("Conta não encontrada"))
                 .andExpect(jsonPath("$.mensagem").value("Conta não encontrada: " + numeroConta));
+    }
+
+    @Test
+    void deveRetornar503QuandoCircuitBreakerAberto() throws Exception {
+        var numeroConta = "1369-8";
+        when(inputPort.consultar(numeroConta))
+                .thenThrow(new ServicoIndisponivelException("gestao-conta"));
+
+        mockMvc.perform(get("/api/v1/contas/{numeroConta}/saldo", numeroConta))
+                .andExpect(status().isServiceUnavailable())
+                .andExpect(jsonPath("$.status").value(503))
+                .andExpect(jsonPath("$.erro").value("Serviço indisponível"))
+                .andExpect(jsonPath("$.mensagem").value("Serviço indisponível no momento: gestao-conta"));
     }
 
     @Test
